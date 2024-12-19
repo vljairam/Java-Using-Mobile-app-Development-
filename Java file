@@ -13,3 +13,65 @@ public class jai {
         this.name = name;
     }
 }
+
+package com.example.todoapp;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText taskEditText;
+    private Button addButton;
+    private ListView taskListView;
+    private ArrayList<Task> tasks;
+    private ArrayAdapter<Task> adapter;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        taskEditText = findViewById(R.id.taskEditText);
+        addButton = findViewById(R.id.addButton);
+        taskListView = findViewById(R.id.taskListView);
+
+        tasks = new ArrayList<>();
+        adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, tasks);
+        taskListView.setAdapter(adapter);
+
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String taskName = taskEditText.getText().toString().trim();
+                if (!taskName.isEmpty()) {
+                    // Add the task
+                    Task newTask = new Task(taskName);
+                    tasks.add(newTask);
+                    adapter.notifyDataSetChanged();  // Refresh the list view
+                    taskEditText.setText("");  // Clear the input field
+                } else {
+                    Toast.makeText(MainActivity.this, "Please enter a task", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        taskListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                tasks.remove(position);  // Remove task from the list
+                adapter.notifyDataSetChanged();  // Refresh the list view
+                Toast.makeText(MainActivity.this, "Task deleted", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+}
